@@ -35,7 +35,7 @@ def evaluate_user_response(user_response, ideal_response):
     model = genai.GenerativeModel("tunedModels/behavioral-interview--dbnow66ey5gn")
 
     prompt = (
-        "Give me one number - a score out of 100 for how similar "
+        "Give me a number - a score out of 100 for how similar and a explanation in 2-3 sentences on how this response could be improved"
         + user_response
         + " is to "
         + ideal_response
