@@ -37,14 +37,16 @@ def generate_user(level):
         return [generate_problem("medium"), generate_problem("hard")]
 
 
-"""
-user_type: boolean
-"""
 
-
-def evaluate(problem, user_input, is_code):
+def evaluate(problem: dict, user_input: str, is_code: bool):
     prompt = "Evaluate the user's solution given a problem. "
     if is_code:
-        prompt += "The user provided a coding solution"
+        prompt += "The user provided a coding solution. "
     else:
-        prompt += "The user explained their solution in words"
+        prompt += "The user explained their solution in words. "
+
+    prompt += "The problem is defined as follows:\n" + problem.question
+
+    prompt += "The user's solution is as follows:\n" + user_input
+
+    prompt += 
