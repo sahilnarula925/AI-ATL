@@ -16,4 +16,4 @@ def generate_problem(question_number):
     prompt = "Give me 1 behavioral interview question with " + question_topics[question_number] + " as the main topic."
     response = model.generate_content(prompt)
 
-    return response
+    return response.text
