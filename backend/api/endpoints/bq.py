@@ -17,3 +17,13 @@ def generate_problem(question_number):
     response = model.generate_content(prompt)
 
     return response.text
+
+def evaluate_user_response(user_response, ideal_response):
+     
+    model = genai.GenerativeModel("tunedModels/behavioral-interview--dbnow66ey5gn")
+
+    prompt = "Give me one number - a score out of 100 for how similar " + user_response + " is to " + ideal_response
+    response = model.generate_content(prompt)
+
+    return response
+    
