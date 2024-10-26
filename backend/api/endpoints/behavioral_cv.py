@@ -1,11 +1,13 @@
 import google.generativeai as genai
 import time
+import os
 from backend.api.utils.oauth import load_creds
 from backend.api.endpoints.behavorial_bq import evaluate_user_response
+import dotenv
+dotenv.load_dotenv()
 
-creds = load_creds("cv")
-genai.configure(credentials=creds)
-model = genai.GenerativeModel("tunedModels/avbehavorialapi-rh48ho8em5cf")
+genai.configure(api_key=os.environ["API_KEY"])
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 
 def process_video(path: str, question: str):
@@ -14,16 +16,27 @@ def process_video(path: str, question: str):
     while video_file.state.name == "PROCESSING":
         time.sleep(2.5)
         video_file = genai.get_file(video_file.name)
+    
+    return video_file
 
-    prompt = "Positive Cues in AUDIO response to interview questions voice/speech patterns: 25/25 - Clear and Concise Communication25/25 - Professionalism in Speaking20/25 - Engaging & Enthusiastic25/25 - Confidence in KnowledgeNegative Cues in AUDIO response to interview questions (voice/speech patterns):Minus 5 Points - HesitationMinus 0 Points - NervousnessMinus 0 Points - Uncertainty"
-
-    # response should contain evaluation of user video (scale 0 to 100) and speech to text
-    response = model.generate_content(
-        [video_file, prompt], request_options={"timeout": 600}
+def generate_transcript(video_file):
+    prompt = (
+        "You are a Recruiter for Software Engineering at a Top Company. You are analyzing a response from an prospective interviewer. "
+        + "You must transcribe a full transcript of the users response in the inputted video file. "
     )
 
-    transcript = response["transcript"]  # do this
+    return model.generate_content([video_file, prompt])
 
-    score, explanation = evaluate_user_response(transcript, question)
+def generate_visual_score(video_file):
 
-    return score, explanation
+    #prompt = """Negative Cues in AUDIO response to interview questions (voice/speech patterns):Minus 5 Points - HesitationMinus 0 Points - NervousnessMinus 0 Points - Uncertainty"""
+    
+    prompt = (
+        "You are a Recruiter for Software Engineering at a Top Company. You are analyzing a response from an prospective interviewer. You must analyze their voiceand speech patterns. "
+        + "You must give them a score out of 25 eachfor Clear and Concise Communication, Professionalism in Speaking, Engaging & Enthusiastic, Confidence in Knowledge. This should total to a number out of 100."
+        + "Also ensure to account for Negative Cues in AUDIO response to interview questions (voice/speech patterns): Subtract 0-20 Points - Hesitation, Subtract 0-20 Points - Nervousness,Subtract 0-20 Points - Uncertainty"
+        + "Note, negative cue minuses range from 0-20 points, with 0 being perfect question response and 20 being absolutely worst. In your response, output the final score that they get for their repsonse after adding up all of the positive cues and subtracting the negative ones. Here is the video to analyze:"
+        + video_file
+    )
+    # response should contain evaluation of user video (scale 0 to 100) and speech to text
+    return model.generate_content([video_file, prompt])

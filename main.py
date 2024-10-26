@@ -1,8 +1,6 @@
-from backend.api.endpoints.technical import generate_user, evaluate
+from backend.api.endpoints.behavioral_cv import process_video, generate_transcript, generate_visual_score
 
-problem = generate_user("internship")
-problem_one = problem[0]
-print(problem_one)
-print()
+video = process_video("behavorial_interview.mp4", "Rate this interview out 100, include 3 key details said")
 
-print(evaluate(problem_one, problem_one["solution"], True))
+print (generate_transcript(video))
+
