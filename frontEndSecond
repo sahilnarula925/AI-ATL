@@ -1,0 +1,138 @@
+import streamlit as st
+import time
+
+# Placeholder functions (not integrated with actual backend)
+def placeholder_function():
+    return "This is a placeholder for backend functionality."
+
+# Intro Screen: Mock Login Screen
+def intro_screen():
+    st.title("Offer.ai")
+    st.subheader("Login with your credentials")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        # Mock authentication success
+        st.session_state['authenticated'] = True
+        st.success("Login successful!")
+        st.experimental_rerun()
+
+# Choose Interview Type Screen
+def choose_interview_type():
+    st.title("Select Interview Type")
+    companies = ["Amazon", "Google", "Netflix", "Meta"]
+    difficulties = ["1st/2nd Year Internship", "All Years Internship", "Entry-Level"]
+    interview_type = st.selectbox("Choose Company", companies)
+    difficulty = st.selectbox("Choose Interview Difficulty", difficulties)
+    if st.button("Proceed"):
+        st.session_state['company'] = interview_type
+        st.session_state['difficulty'] = difficulty
+        st.session_state['interview_stage'] = 'behavioral'
+        st.experimental_rerun()
+
+# Behavioral Interview Screen
+def behavioral_interview():
+    st.title(f"{st.session_state['company']} Behavioral Interview")
+    st.write(f"Position Level: {st.session_state['difficulty']}")
+    st.write("**Instructions:** Please ensure your video and audio are turned on.")
+
+    # Display mock behavioral question
+    question = f"Tell me about a time when you demonstrated leadership at {st.session_state['company']}."
+    st.write("**Interviewer:** " + question)
+    
+    # Mock video recording placeholder
+    st.warning("Video recording is currently not supported in this storyboard.")
+    st.info("Imagine you are recording your response for this question.")
+    
+    # Placeholder for submitting response
+    if st.button("Submit Response"):
+        st.session_state['behavioral_analysis'] = "Placeholder behavioral analysis result."
+        st.session_state['interview_stage'] = 'technical'
+        st.experimental_rerun()
+
+# Technical Coding Interview Screen
+def technical_interview():
+    st.title(f"{st.session_state['company']} Technical Interview")
+    st.write(f"Difficulty Level: {st.session_state['difficulty']}")
+    st.write("You have 40 minutes to complete the following question.")
+
+    # Display mock technical question
+    difficulty_level = {
+        "1st/2nd Year Internship": "Easy",
+        "All Years Internship": "Medium",
+        "Entry-Level": "Hard"
+    }
+    question = {
+        "Easy": "Implement a function to reverse a string.",
+        "Medium": "Find the middle node of a singly linked list.",
+        "Hard": "Implement a LRU cache."
+    }
+    st.write("**Question:** " + question.get(difficulty_level.get(st.session_state['difficulty'], "Easy"), "Implement a function to reverse a string."))
+    
+    # Placeholder for code entry and hint
+    st.text_area("Write your code here:")
+    if st.button("Hint"):
+        st.info("Think about edge cases and time complexity.")
+
+    # Placeholder for submitting code
+    if st.button("Submit Code"):
+        st.session_state['technical_analysis'] = "Placeholder technical analysis result."
+        st.session_state['interview_stage'] = 'loading'
+        st.experimental_rerun()
+
+# Loading Screen
+def loading_screen():
+    st.title("Analyzing Your Responses")
+    with st.spinner('Processing...'):
+        time.sleep(3)  # Simulate processing time
+    st.session_state['interview_stage'] = 'feedback'
+    st.experimental_rerun()
+
+# Feedback Screen
+def feedback_screen():
+    st.title("Interview Feedback")
+    name = st.text_input("Enter Your Name")
+    if name:
+        score = 850  # Placeholder score out of 1000
+        st.write(f"**Score:** {score}/1000")
+        st.write("**Behavioral Analysis:**")
+        st.write(st.session_state.get('behavioral_analysis', 'No behavioral analysis available.'))
+        st.write("**Technical Analysis:**")
+        st.write(st.session_state.get('technical_analysis', 'No technical analysis available.'))
+        st.write("""
+        **Resources to Improve:**
+        - [Cracking the Coding Interview](https://www.crackingthecodinginterview.com/)
+        - [LeetCode](https://leetcode.com/)
+        - [System Design Primer](https://github.com/donnemartin/system-design-primer)
+        """)
+        if st.button("Take Another Interview"):
+            st.session_state.clear()
+            st.experimental_rerun()
+
+# Main function to control app flow
+def main():
+    if 'authenticated' not in st.session_state:
+        st.session_state['authenticated'] = False
+    if 'interview_stage' not in st.session_state:
+        st.session_state['interview_stage'] = 'intro'
+    
+    if not st.session_state['authenticated']:
+        intro_screen()
+    else:
+        if st.session_state['interview_stage'] == 'intro':
+            choose_interview_type()
+        elif st.session_state['interview_stage'] == 'behavioral':
+            behavioral_interview()
+        elif st.session_state['interview_stage'] == 'technical':
+            technical_interview()
+        elif st.session_state['interview_stage'] == 'loading':
+            loading_screen()
+        elif st.session_state['interview_stage'] == 'feedback':
+            feedback_screen()
+
+if __name__ == "__main__":
+    main()
+
+
+
+
