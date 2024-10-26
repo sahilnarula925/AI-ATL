@@ -1,5 +1,4 @@
 import os.path
-
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -11,30 +10,19 @@ SCOPES = [
 ]
 
 
-def load_creds():
-    """Converts `client_secret.json` to a credential object.
-
-    This function caches the generated tokens to minimize the use of the
-    consent screen.
-    """
+def load_creds(type):
     creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists("backend/api/endpoints/token.json"):
-        creds = Credentials.from_authorized_user_file(
-            "backend/api/endpoints/token.json", SCOPES
-        )
-    # If there are no (valid) credentials available, let the user log in.
+
+    if os.path.exists(f"token_{type}.json"):
+        creds = Credentials.from_authorized_user_file(f"token_{type}.json", SCOPES)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                "backend/api/endpoints/client_secret.json", SCOPES
+                f"client_secret_{type}.json", SCOPES
             )
             creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open("backend/api/endpoints/token.json", "w") as token:
+        with open(f"token_{type}.json", "w") as token:
             token.write(creds.to_json())
     return creds
