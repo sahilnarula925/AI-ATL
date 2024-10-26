@@ -1,6 +1,8 @@
-from backend.api.endpoints.technical import generate_user
+from backend.api.endpoints.technical import generate_user, evaluate
 
-u = generate_user("internship")
-for i in u:
-    print(i)
-    print("--------")
+problem = generate_user("internship")
+problem_one = problem[0]
+print(problem_one)
+print()
+
+print(evaluate(problem_one, problem_one["solution"], True))
