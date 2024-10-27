@@ -2,9 +2,9 @@ import google.generativeai as genai
 import json
 from backend.api.utils.oauth import load_creds
 
-creds = load_creds("technical")
+creds = load_creds()
 genai.configure(credentials=creds)
-model = genai.GenerativeModel("tunedModels/test4-p3xuftrlivrt")
+model = genai.GenerativeModel("tunedModels/aiatltechnical-g1tdmwqkmops")
 
 """
 dict = {question = str, solution = str, complexity = {time = str space = str test_cases = [{input = obj, output = obj}], code_explanation = str}
@@ -29,9 +29,9 @@ def generate_problem(difficulty):
 
 
 def generate_user(level):
-    if level == "pre_internship":
+    if level == "1st/2nd Year Internship":
         return [generate_problem("easy"), generate_problem("easy")]
-    elif level == "internship":
+    elif level == "All Years Internship":
         return [generate_problem("easy"), generate_problem("medium")]
     else:
         return [generate_problem("medium"), generate_problem("hard")]

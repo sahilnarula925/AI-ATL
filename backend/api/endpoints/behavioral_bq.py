@@ -2,7 +2,7 @@ from backend.api.utils.oauth import load_creds
 import google.generativeai as genai
 import os
 
-creds = load_creds("bq")
+creds = load_creds()
 genai.configure(credentials=creds)
 
 
