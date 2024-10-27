@@ -21,7 +21,7 @@ def generate_problem(question_number):
     prompt = (
         "Give me 1 behavioral interview question with "
         + question_topics[question_number]
-        + " as the main topic."
+        + " as the main topic. Do not add STAR method notes after this. Only have the behavioral question"
     )
     response = model.generate_content(prompt)
 
