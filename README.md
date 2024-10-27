@@ -1,6 +1,6 @@
 <img width="297" alt="offer.ai logo" src="https://github.com/user-attachments/assets/5a6ea129-b7f6-4602-84ef-15287656b504">
 
-# offer.ai
+# Offer.ai - Trained AI Interview Simulator
 
 
 ## 💡 **Inspiration**
