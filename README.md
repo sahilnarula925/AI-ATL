@@ -17,7 +17,9 @@ File Tree
 | requirements.txt
 
 
-<img width="269" alt="Screenshot 2024-10-25 at 8 21 57 PM" src="https://github.com/user-attachments/assets/d6654118-5410-4afa-a555-21691fb4df21">
+
+[offer ai_logo](https://github.com/user-attachments/assets/fc338bd6-7c72-4b4b-8c6c-cc38dbf59c0e)
+
 
 
 
