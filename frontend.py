@@ -1,3 +1,4 @@
+import base64
 import streamlit as st
 import streamlit.components.v1 as components
 import time
@@ -54,13 +55,18 @@ st.markdown("""
 
 def intro_screen():
     st.title("Ready for your next job?")
-    st.subheader("Choose a difficulty level below to access a wide range of technical questions with detailed solutions, track your progress, and sharpen your skills with customized practice sets. Find your offer with offer.ai.")
+    st.subheader("Access a wide range of technical questions, track progress, and sharpen your skills. Find your offer with offer.ai.")
+    
+    # Interview type selection
+    st.subheader("Select Interview Type")
     difficulties = ["1st/2nd Year Internship", "All Years Internship", "Entry-Level"]
     difficulty = st.selectbox("Choose Interview Difficulty", difficulties)
+    
     if st.button("Proceed"):
+        st.session_state['authenticated'] = True
         st.session_state['difficulty'] = difficulty
+        st.success("Login successful!")
         st.session_state['interview_stage'] = 'behavioral'
-        
 
 # Behavioral Interview Screen with webcam recording
 def behavioral_interview():
@@ -68,15 +74,13 @@ def behavioral_interview():
     st.write(f"Position Level: {st.session_state['difficulty']}")
     st.write("**Instructions:** Please ensure your video and audio are turned on.")
 
-    for i in range (0, 6):
-        # Display mock behavioral question
-        interviewQuestion = generate_problem(question_number= i)
-        st.write(interviewQuestion)
+    for i in range (6):
         
-        # HTML and JavaScript for webcam recording
-        # HTML and JavaScript for webcam recording
+        interviewQuestion = generate_problem(question_number=i)
+        st.write(interviewQuestion)
 
-        video_recorder_html = '''
+        # JavaScript for webcam recording with automatic save and upload
+        video_recorder_html = f'''
             <div>
                 <video id="video" width="320" height="240" autoplay></video>
                 <button id="startRecord" onclick="startRecording()">Start Recording</button>
@@ -84,63 +88,65 @@ def behavioral_interview():
                 <p id="status">Status: Not Recording</p>
                 <br/>
                 <video id="playback" width="320" height="240" controls></video>
-                <a id="downloadLink" style="display: none;">Download Video</a>
             </div>
             <script>
                 let mediaRecorder;
                 let recordedChunks = [];
-                async function startRecording() {
-                    let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                
+                async function startRecording() {{
+                    let stream = await navigator.mediaDevices.getUserMedia({{ video: true }});
                     document.getElementById("video").srcObject = stream;
-                    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-                    mediaRecorder.ondataavailable = event => {
+                    mediaRecorder = new MediaRecorder(stream, {{ mimeType: 'video/webm' }});
+                    mediaRecorder.ondataavailable = event => {{
                         if (event.data.size > 0) recordedChunks.push(event.data);
-                    };
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-                        const url = URL.createObjectURL(blob);
-                        document.getElementById("playback").src = url;
-                        const downloadLink = document.getElementById("downloadLink");
-                        downloadLink.href = url;
-                        downloadLink.download = "behavioral_interview.mp4";
-                        downloadLink.style.display = "block";
-                        downloadLink.textContent = "Download Your Recording";
+                    }};
+                    mediaRecorder.onstop = () => {{
+                        const blob = new Blob(recordedChunks, {{ type: 'video/webm' }});
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = () => {{
+                            const base64data = reader.result.split(',')[1];
+                            window.parent.postMessage({{ 'videoData': base64data, 'index': {i} }}, "*");
+                        }};
+                        document.getElementById("status").innerHTML = "Status: Stopped Recording";
                         recordedChunks = [];
-                    };
+                    }};
                     mediaRecorder.start();
                     document.getElementById("status").innerHTML = "Status: Recording";
                     document.getElementById("startRecord").disabled = true;
                     document.getElementById("stopRecord").disabled = false;
-                }
-                function stopRecording() {
+                }}
+                
+                function stopRecording() {{
                     mediaRecorder.stop();
                     document.getElementById("video").srcObject.getTracks().forEach(track => track.stop());
-                    document.getElementById("status").innerHTML = "Status: Stopped Recording";
                     document.getElementById("startRecord").disabled = false;
                     document.getElementById("stopRecord").disabled = true;
-                }
+                }}
             </script>
         '''
 
-
         # Embed the video recorder HTML in Streamlit
         components.html(video_recorder_html, height=500)
-    # Add a Streamlit file uploader to accept video file for saving
-        st.write("Upload your recording here after recording stops:")
-        uploaded_video = st.file_uploader("Choose a video file", type=["mp4"])
 
-        if uploaded_video is not None:
-            with open("behavioral_interview.mp4", "wb") as f:
-                f.write(uploaded_video.read())
-            get_behavioral_score("behavioral_interview.mp4", interviewQuestion)
-            st.success("Recording saved successfully!")
+        # Receive video data from the JavaScript
+        if f"video_data_{i}" in st.session_state:
+            # Decode the Base64 data and save it
+            video_bytes = base64.b64decode(st.session_state[f"video_data_{i}"])
+            video_path = f"behavioral_interview_{i}.mp4"
+            with open(video_path, "wb") as f:
+                f.write(video_bytes)
+            st.success(f"Recording saved successfully for question {i}!")
+            
+            # Pass the saved video path to get_behavioral_score function
+            uploaded_score = get_behavioral_score(video_path, interviewQuestion)
+            st.write("Behavioral Score:", uploaded_score)
         
 
-        # Placeholder for submitting response
-        if st.button("Submit Response"):
+    if st.button("Submit Response"):
             
-            st.session_state['behavioral_analysis'] = "Placeholder behavioral analysis result."
-            st.session_state['interview_stage'] = 'technical'
+        st.session_state['behavioral_analysis'] = "Placeholder behavioral analysis result."
+        st.session_state['interview_stage'] = 'technical'
         
 
 # Technical Coding Interview Screen
@@ -149,7 +155,6 @@ def technical_interview():
     st.write(f"Difficulty Level: {st.session_state['difficulty']}")
     st.write("You have 40 minutes to complete the following question.")
 
-    # Display mock technical question
     difficulty_level = {
         "1st/2nd Year Internship": "Easy",
         "All Years Internship": "Medium",
@@ -210,7 +215,7 @@ def main():
         intro_screen()
     else:
         if st.session_state['interview_stage'] == 'intro':
-            choose_interview_type()
+            intro_screen()
         elif st.session_state['interview_stage'] == 'behavioral':
             behavioral_interview()
         elif st.session_state['interview_stage'] == 'technical':
