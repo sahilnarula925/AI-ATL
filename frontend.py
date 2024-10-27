@@ -11,7 +11,7 @@ st.markdown("""
     <style>
     /* Set the background image */
     .reportview-container, .main {
-        background-image: url("offer.ai.jpg");
+        background-image: url("intro.jpg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
