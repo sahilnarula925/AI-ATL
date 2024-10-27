@@ -18,7 +18,7 @@ File Tree
 
 
 
-[offer ai_logo](https://github.com/user-attachments/assets/fc338bd6-7c72-4b4b-8c6c-cc38dbf59c0e)
+<img width="297" alt="Screenshot 2024-10-26 at 3 08 30 PM" src="https://github.com/user-attachments/assets/5a6ea129-b7f6-4602-84ef-15287656b504">
 
 
 
