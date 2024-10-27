@@ -55,7 +55,7 @@ st.markdown("""
 
 def intro_screen():
     st.title("Ready for your next job?")
-    st.subheader("Access a wide range of technical questions, track progress, and sharpen your skills. Find your offer with offer.ai.")
+    st.subheader("Select an interview type below to access a wide range of technical questions, track progress, and sharpen your skills. Find your offer with offer.ai.")
     
     # Interview type selection
     st.subheader("Select Interview Type")
