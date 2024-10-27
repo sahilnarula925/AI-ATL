@@ -2,10 +2,6 @@ import google.generativeai as genai
 import json
 from backend.api.utils.oauth import load_creds
 
-creds = load_creds()
-genai.configure(credentials=creds)
-model = genai.GenerativeModel("tunedModels/aiatltechnical-g1tdmwqkmops")
-
 """
 dict = {question = str, solution = str, complexity = {time = str space = str test_cases = [{input = obj, output = obj}], code_explanation = str}
 """
@@ -13,6 +9,11 @@ dict = {question = str, solution = str, complexity = {time = str space = str tes
 
 def generate_problem(difficulty):
     # difficuly - pre-internship(easy, easy), internship(med / medium, medium / medium, hard)
+
+    creds = load_creds()
+    genai.configure(credentials=creds)
+    model = genai.GenerativeModel("tunedModels/aiatltechnical-g1tdmwqkmops")
+
     prompt = (
         "Generate only one software engineering LeetCode style question. The difficulty for this singular problem should be "
         + difficulty
@@ -29,6 +30,11 @@ def generate_problem(difficulty):
 
 
 def generate_user(level):
+
+    creds = load_creds()
+    genai.configure(credentials=creds)
+    model = genai.GenerativeModel("tunedModels/aiatltechnical-g1tdmwqkmops")
+
     if level == "1st/2nd Year Internship":
         return [generate_problem("easy"), generate_problem("easy")]
     elif level == "All Years Internship":
@@ -38,6 +44,11 @@ def generate_user(level):
 
 
 def evaluate(problem: dict, user_input: str, is_code: bool):
+
+    creds = load_creds()
+    genai.configure(credentials=creds)
+    model = genai.GenerativeModel("tunedModels/aiatltechnical-g1tdmwqkmops")
+
     prompt = "Evaluate the user's solution given a problem. "
     if is_code:
         prompt += "The user provided a coding solution. "
