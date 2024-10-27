@@ -34,22 +34,15 @@ st.markdown("""
 
     /* Set secondary color (lighter green) for subheaders */
     .css-1v0mbdj {
-        color: #66ff66 !important;
+        color: #696969 !important;
     }
 
-    /* Style for user input fields with white text */
     .stTextInput>div>div>input, .stTextArea>div>textarea, .stSelectbox>div>div>div>span {
         color: white !important;
         background-color: rgba(0, 0, 0, 0.7) !important; /* Slightly transparent black background */
         border: 1px solid #39FF14 !important;
     }
 
-    /* Placeholder text */
-    ::placeholder {
-        color: #66ff66 !important;
-    }
-
-    /* Button styling */
     .stButton>button {
         color: white !important;
         background-color: #39FF14 !important;
@@ -59,11 +52,28 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+logo_url = "https://imgur.com/a/xC2UQs7"
+
+st.markdown(
+    f"""
+    <style>
+    .fixed-image {{
+        position: fixed;
+        top: 20px;
+        right: 20px;  
+        width: 100px;  
+        z-index: 1000; 
+    }}
+    </style>
+    <img src="{logo_url}" class="fixed-image">
+    """,
+    unsafe_allow_html=True
+)
 
 
 def intro_screen():
     st.title("Ready for your next job?")
-    st.subheader("Select an interview type below to access a wide range of technical questions, track progress, and sharpen your skills. Find your offer with offer.ai.")
+    st.subheader("Select an interview type below to access a wide range of technical questions, track progress, and sharpen your skills. Find your next offer with offer.ai.")
     
     # Interview type selection
     st.subheader("Select Interview Type")
@@ -73,7 +83,6 @@ def intro_screen():
     if st.button("Proceed"):
         st.session_state['authenticated'] = True
         st.session_state['difficulty'] = difficulty
-        st.success("Login successful!")
         st.session_state['interview_stage'] = 'behavioral'
 
 #import streamlit as st
@@ -92,7 +101,7 @@ def behavioral_interview():
         # JavaScript for webcam recording with automatic save and upload
         video_recorder_html = f'''
             <div>
-                <video id="video" width="640" height="480" autoplay></video>
+                <video id="video" width="640" height="460" autoplay></video>
                 <button id="startRecord" onclick="startRecording()">Start Recording</button>
                 <button id="stopRecord" onclick="stopRecording()" disabled>Stop Recording</button>
                 <p id="status">Status: Not Recording</p>
@@ -160,6 +169,8 @@ def behavioral_interview():
             st.write("Behavioral Score:", uploaded_score)
 
         st.write("\n")
+        st.write("")
+        st.write("")
 
     if st.button("Submit Response"):
         st.session_state['behavioral_analysis'] = "Placeholder behavioral analysis result."
@@ -172,8 +183,8 @@ def technical_interview1():
     st.write("You have 40 minutes to complete the following question.")
 
     problems = generate_user(st.session_state['difficulty'])   
-    problem1 = problems[0]['question']
-    st.write("**Question:** " + problem1)
+    problem1 = problems[0]
+    st.write("**Question:** " + problem1['question'])
 
     if 'user_text' not in st.session_state:
         st.session_state['user_text'] = ''   
@@ -183,7 +194,7 @@ def technical_interview1():
     if st.button("Submit Code"):
         st.session_state['technical_analysis'] = "Placeholder technical analysis result."
         st.session_state['interview_stage'] = 'technical2'
-        t.append(evaluate(problem1, st.session_state['user_text'], true))
+        t.append(evaluate(problem1, st.session_state['user_text'], True))
 
 def technical_interview2():
     st.title("Technical Interview Question 2")
@@ -191,18 +202,19 @@ def technical_interview2():
     st.write("You have 40 minutes to complete the following question.")
 
     problems = generate_user(st.session_state['difficulty'])  
-    problem2 = problems[1]['question']
-    st.write("**Question:** " + problem2)
+    problem2 = problems[1]
+    st.write("**Question:** " + problem2['question'])
     
     if 'user_text' not in st.session_state:
         st.session_state['user_text'] = ''
         
     st.session_state['user_text'] = st.text_area("Write your code here:", value=st.session_state['user_text'])
 
+
     if st.button("Submit Code"):
         st.session_state['technical_analysis'] = "Placeholder technical analysis result."
         st.session_state['interview_stage'] = 'feedback'
-        t.append(evaluate(problem2, st.session_state['user_text'], true))
+        t.append(evaluate(problem2, st.session_state['user_text'], True))
 
 
 # Feedback Screen
@@ -211,7 +223,7 @@ def feedback_screen():
     name = st.text_input("Enter Your Name")
     if name:
         score = sum(t)
-        st.write(f"**Score:** {score}/1000")
+        st.write(f"**Score:** {score/140}%")
         # st.write("**Behavioral Analysis:**")
         # st.write(st.session_state.get('behavioral_analysis', 'No behavioral analysis available.'))
         # st.write("**Technical Analysis:**")

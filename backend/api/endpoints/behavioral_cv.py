@@ -44,9 +44,9 @@ def generate_visual_score(video_file):
 
     prompt = (
         "You are a Recruiter for Software Engineering at a Top Company. You are analyzing a response from an prospective interviewer. You must analyze their voiceand speech patterns. "
-        + "You must give them a score out of 25 eachfor Clear and Concise Communication, Professionalism in Speaking, Engaging & Enthusiastic, Confidence in Knowledge. This should total to a number out of 100."
-        + "Also ensure to account for Negative Cues in AUDIO response to interview questions (voice/speech patterns): Subtract 0-20 Points - Hesitation, Subtract 0-20 Points - Nervousness,Subtract 0-20 Points - Uncertainty"
-        + "Note, negative cue minuses range from 0-20 points, with 0 being perfect question response and 20 being absolutely worst. In your response, output the final score that they get for their repsonse after adding up all of the positive cues and subtracting the negative ones."
+        + "You must give them a score out of 250 eachfor Clear and Concise Communication, Professionalism in Speaking, Engaging & Enthusiastic, Confidence in Knowledge. This should total to a number out of 1000."
+        + "Also ensure to account for Negative Cues in AUDIO response to interview questions (voice/speech patterns): Subtract 0-200 Points - Hesitation, Subtract 0-200 Points - Nervousness,Subtract 0-200 Points - Uncertainty"
+        + "Note, negative cue minuses range from 0-200 points, with 0 being perfect question response and 200 being absolutely worst. In your response, output the final score that they get for their repsonse after adding up all of the positive cues and subtracting the negative ones."
     )
 
     return model.generate_content([video_file, prompt]).text

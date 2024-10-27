@@ -74,7 +74,7 @@ def evaluate(problem: dict, user_input: str, is_code: bool):
             + problem["code_explanation"]
         )
 
-    prompt += "\nUsing the data provided, evaluate the user's solution. Rate the solution on score out of 1,000 where 0 is the worst and 1,000. Return only the numerical score"
+    prompt += "\nUsing the data provided, evaluate the user's solution. Rate the solution on score out of 6,000 where 0 is the worst and 6,000 is the best. Return only the numerical score"
 
     response = model.generate_content(prompt)
     return response.text
