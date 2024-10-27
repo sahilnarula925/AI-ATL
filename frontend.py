@@ -4,8 +4,9 @@ import streamlit.components.v1 as components
 import time
 from backend.api.endpoints.behavioral_cv import get_behavioral_score
 from backend.api.endpoints.behavioral_bq import generate_problem, evaluate_user_response
-from backend.api.endpoints.technical import *
+from backend.api.endpoints.technical import generate_user, evaluate
 
+t = []
 
 # Inject CSS for custom styling with background image
 st.markdown("""
@@ -85,7 +86,7 @@ def behavioral_interview():
     st.write("**Instructions:** Please ensure your video and audio are turned on.")
 
     for i in range(6):
-        interviewQuestion = generate_problem(question_number=i)
+        interviewQuestion = generate_problem(i) 
         st.write(interviewQuestion)
 
         # JavaScript for webcam recording with automatic save and upload
@@ -153,7 +154,9 @@ def behavioral_interview():
             st.success(f"Recording saved successfully for question {i}!")
 
             # Pass the saved video path to get_behavioral_score function
-            uploaded_score = get_behavioral_score(video_path, interviewQuestion)
+            b_score, v_score = get_behavioral_score(video_path, interviewQuestion)
+            t.append(b_score)
+            t.append(v_score)
             st.write("Behavioral Score:", uploaded_score)
 
         st.write("\n")
@@ -169,14 +172,18 @@ def technical_interview1():
     st.write("You have 40 minutes to complete the following question.")
 
     problems = generate_user(st.session_state['difficulty'])   
-    st.write("**Question:** " + problems[0]['question'])
+    problem1 = problems[0]['question']
+    st.write("**Question:** " + problem1)
+
+    if 'user_text' not in st.session_state:
+        st.session_state['user_text'] = ''   
         
-        
-    st.text_area("Write your code here:")
+    st.session_state['user_text'] = st.text_area("Write your code here:", value=st.session_state['user_text'])
 
     if st.button("Submit Code"):
         st.session_state['technical_analysis'] = "Placeholder technical analysis result."
         st.session_state['interview_stage'] = 'technical2'
+        t.append(evaluate(problem1, st.session_state['user_text'], true))
 
 def technical_interview2():
     st.title("Technical Interview Question 2")
@@ -184,35 +191,31 @@ def technical_interview2():
     st.write("You have 40 minutes to complete the following question.")
 
     problems = generate_user(st.session_state['difficulty'])  
-     
-    st.write("**Question:** " + problems[1]['question'])
+    problem2 = problems[1]['question']
+    st.write("**Question:** " + problem2)
+    
+    if 'user_text' not in st.session_state:
+        st.session_state['user_text'] = ''
         
-        
-    st.text_area("Write your code here:")
+    st.session_state['user_text'] = st.text_area("Write your code here:", value=st.session_state['user_text'])
 
     if st.button("Submit Code"):
         st.session_state['technical_analysis'] = "Placeholder technical analysis result."
-        st.session_state['interview_stage'] = 'loading'
+        st.session_state['interview_stage'] = 'feedback'
+        t.append(evaluate(problem2, st.session_state['user_text'], true))
 
-# Loading Screen
-def loading_screen():
-    st.title("Analyzing Your Responses")
-    with st.spinner('Processing...'):
-        time.sleep(3)  # Simulate processing time
-    st.session_state['interview_stage'] = 'feedback'
-    
 
 # Feedback Screen
 def feedback_screen():
     st.title("Interview Feedback")
     name = st.text_input("Enter Your Name")
     if name:
-        score = 850  # Placeholder score out of 1000
+        score = sum(t)
         st.write(f"**Score:** {score}/1000")
-        st.write("**Behavioral Analysis:**")
-        st.write(st.session_state.get('behavioral_analysis', 'No behavioral analysis available.'))
-        st.write("**Technical Analysis:**")
-        st.write(st.session_state.get('technical_analysis', 'No technical analysis available.'))
+        # st.write("**Behavioral Analysis:**")
+        # st.write(st.session_state.get('behavioral_analysis', 'No behavioral analysis available.'))
+        # st.write("**Technical Analysis:**")
+        # st.write(st.session_state.get('technical_analysis', 'No technical analysis available.'))
         st.write("""
         **Resources to Improve:**
         - [Cracking the Coding Interview](https://www.crackingthecodinginterview.com/)
@@ -243,8 +246,6 @@ def main():
             technical_interview1()
         elif st.session_state['interview_stage'] == 'technical2':
             technical_interview2()
-        elif st.session_state['interview_stage'] == 'loading':
-            loading_screen()
         elif st.session_state['interview_stage'] == 'feedback':
             feedback_screen()
 

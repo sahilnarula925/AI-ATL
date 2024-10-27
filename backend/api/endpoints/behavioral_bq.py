@@ -20,7 +20,7 @@ def generate_problem(question_number):
 
     prompt = (
         "Give me 1 behavioral interview question with "
-        + question_topics[question_number]
+        + str(question_topics[question_number])
         + " as the main topic. Do not add STAR method notes after this. Only have the behavioral question"
     )
     response = model.generate_content(prompt)
@@ -37,9 +37,9 @@ def evaluate_user_response(user_response, ideal_response):
     model = genai.GenerativeModel("tunedModels/behavioral-interview--dbnow66ey5gn")
 
     score = (
-        "Give me a number - a score out of 300 for how similar "
+        "Give me a number - a score out of 1000 for how well this prompt: "
         + user_response
-        + " is to "
+        + " answers this question: "
         + ideal_response
     )
     response = model.generate_content(score)
