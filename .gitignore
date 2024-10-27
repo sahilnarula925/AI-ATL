@@ -164,15 +164,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Technical
-client_secret_technical.json
-token_technical.json
-
-# Behavioral - video
-client_secret_cv.json
-token_cv.json
-
-# Behavioral - questions
-client_secret_bq.json
-token_bq.json
-generate_dataset/
+client_secret.json
+token.json
