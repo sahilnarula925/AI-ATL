@@ -1,6 +1,7 @@
 import google.generativeai as genai
 import json
 from backend.api.utils.oauth import load_creds
+import time
 
 """
 dict = {question = str, solution = str, complexity = {time = str space = str test_cases = [{input = obj, output = obj}], code_explanation = str}
@@ -26,6 +27,7 @@ def generate_problem(difficulty):
     try:
         return json.loads(txt)
     except:
+        time.sleep(0.2)
         return generate_problem(difficulty)
 
 

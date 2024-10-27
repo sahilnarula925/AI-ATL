@@ -4,14 +4,21 @@ import streamlit.components.v1 as components
 import time
 from backend.api.endpoints.behavioral_cv import get_behavioral_score
 from backend.api.endpoints.behavioral_bq import generate_problem, evaluate_user_response
-from backend.api.endpoints.technical import generate_user, evaluate
+from backend.api.endpoints.technical import *
 
 
 # Inject CSS for custom styling with background image
 st.markdown("""
     <style>
-    /* Set the background image */
-    .reportview-container, .main {
+
+    [data-testid="stAppViewContainer"] {
+    background-image: url("https://i.imgur.com/lSjVYqD.jpeg");
+    background-size: 100%;
+    background-position: center;
+    background-attachment: fixed;
+    }
+
+    .stApp {
         background-image: url("intro.jpg");
         background-size: cover;
         background-position: center;
@@ -21,7 +28,7 @@ st.markdown("""
 
     /* Set primary text color */
     .css-18e3th9, .css-1d391kg, h1, h2, h3, h4, h5, h6, p {
-        color: #39FF14 !important;
+        color: #000000 !important;
     }
 
     /* Set secondary color (lighter green) for subheaders */
@@ -68,21 +75,23 @@ def intro_screen():
         st.success("Login successful!")
         st.session_state['interview_stage'] = 'behavioral'
 
-# Behavioral Interview Screen with webcam recording
+#import streamlit as st
+import streamlit.components.v1 as components
+import base64
+
 def behavioral_interview():
-    st.title(" Behavioral Interview")
+    st.title("Behavioral Interview")
     st.write(f"Position Level: {st.session_state['difficulty']}")
     st.write("**Instructions:** Please ensure your video and audio are turned on.")
 
-    for i in range (6):
-        
+    for i in range(6):
         interviewQuestion = generate_problem(question_number=i)
         st.write(interviewQuestion)
 
         # JavaScript for webcam recording with automatic save and upload
         video_recorder_html = f'''
             <div>
-                <video id="video" width="320" height="240" autoplay></video>
+                <video id="video" width="640" height="480" autoplay></video>
                 <button id="startRecord" onclick="startRecording()">Start Recording</button>
                 <button id="stopRecord" onclick="stopRecording()" disabled>Stop Recording</button>
                 <p id="status">Status: Not Recording</p>
@@ -123,57 +132,67 @@ def behavioral_interview():
                     document.getElementById("startRecord").disabled = false;
                     document.getElementById("stopRecord").disabled = true;
                 }}
+
+                window.addEventListener("message", (event) => {{
+                    if (event.data.index === {i}) {{
+                        document.getElementById("playback").src = "data:video/webm;base64," + event.data.videoData;
+                    }}
+                }});
             </script>
         '''
 
         # Embed the video recorder HTML in Streamlit
         components.html(video_recorder_html, height=500)
 
-        # Receive video data from the JavaScript
+        # Receive video data from JavaScript and save it
         if f"video_data_{i}" in st.session_state:
-            # Decode the Base64 data and save it
             video_bytes = base64.b64decode(st.session_state[f"video_data_{i}"])
             video_path = f"behavioral_interview_{i}.mp4"
             with open(video_path, "wb") as f:
                 f.write(video_bytes)
             st.success(f"Recording saved successfully for question {i}!")
-            
+
             # Pass the saved video path to get_behavioral_score function
             uploaded_score = get_behavioral_score(video_path, interviewQuestion)
             st.write("Behavioral Score:", uploaded_score)
-        
+
+        st.write("\n")
 
     if st.button("Submit Response"):
-            
         st.session_state['behavioral_analysis'] = "Placeholder behavioral analysis result."
         st.session_state['interview_stage'] = 'technical'
-        
 
-# Technical Coding Interview Screen
-def technical_interview():
-    st.title("Technical Interview")
+
+def technical_interview1():
+    st.title("Technical Interview Question 1")
     st.write(f"Difficulty Level: {st.session_state['difficulty']}")
     st.write("You have 40 minutes to complete the following question.")
 
-    difficulty_level = {
-        "1st/2nd Year Internship": "Easy",
-        "All Years Internship": "Medium",
-        "Entry-Level": "Hard"
-    }
-   
-    technicalQuestion = generate_user(difficulty_level)
-    st.write("**Question:** " + "problem['question']")
-    
-    # Placeholder for code entry and hint
+    problems = generate_user(st.session_state['difficulty'])   
+    st.write("**Question:** " + problems[0]['question'])
+        
+        
     st.text_area("Write your code here:")
-    if st.button("Hint"):
-        st.info("problem['hints']")
 
-    # Placeholder for submitting code
+    if st.button("Submit Code"):
+        st.session_state['technical_analysis'] = "Placeholder technical analysis result."
+        st.session_state['interview_stage'] = 'technical2'
+
+def technical_interview2():
+    st.title("Technical Interview Question 2")
+    st.write(f"Difficulty Level: {st.session_state['difficulty']}")
+    st.write("You have 40 minutes to complete the following question.")
+
+    problems = generate_user(st.session_state['difficulty'])  
+     
+    st.write("**Question:** " + problems[1]['question'])
+        
+        
+    st.text_area("Write your code here:")
+
     if st.button("Submit Code"):
         st.session_state['technical_analysis'] = "Placeholder technical analysis result."
         st.session_state['interview_stage'] = 'loading'
-    
 
 # Loading Screen
 def loading_screen():
@@ -210,6 +229,8 @@ def main():
         st.session_state['authenticated'] = False
     if 'interview_stage' not in st.session_state:
         st.session_state['interview_stage'] = 'intro'
+    if 'difficulty' not in st.session_state:
+        st.session_state['difficulty'] = None
     
     if not st.session_state['authenticated']:
         intro_screen()
@@ -219,7 +240,9 @@ def main():
         elif st.session_state['interview_stage'] == 'behavioral':
             behavioral_interview()
         elif st.session_state['interview_stage'] == 'technical':
-            technical_interview()
+            technical_interview1()
+        elif st.session_state['interview_stage'] == 'technical2':
+            technical_interview2()
         elif st.session_state['interview_stage'] == 'loading':
             loading_screen()
         elif st.session_state['interview_stage'] == 'feedback':
