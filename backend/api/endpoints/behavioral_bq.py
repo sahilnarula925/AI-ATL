@@ -2,11 +2,10 @@ from backend.api.utils.oauth import load_creds
 import google.generativeai as genai
 import os
 
-creds = load_creds()
-genai.configure(credentials=creds)
-
-
 def generate_problem(question_number):
+
+    creds = load_creds()
+    genai.configure(credentials=creds)
 
     question_topics = [
         "tell me about yourself",
@@ -32,6 +31,9 @@ def generate_problem(question_number):
 # return score, explanation
 def evaluate_user_response(user_response, ideal_response):
 
+    creds = load_creds()
+    genai.configure(credentials=creds)
+
     model = genai.GenerativeModel("tunedModels/behavioral-interview--dbnow66ey5gn")
 
     score = (
@@ -40,12 +42,6 @@ def evaluate_user_response(user_response, ideal_response):
         + " is to "
         + ideal_response
     )
-    explanation = (
-        "Provide a 2-3 sentence explanation for how to improve this: "
-        + user_response
-        + " comapred to this: "
-        + ideal_response
-    )
-    response = model.generate_content(explanation)
+    response = model.generate_content(score)
 
-    return score, explanation
+    return response.text
