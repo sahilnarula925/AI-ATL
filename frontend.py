@@ -51,25 +51,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Placeholder functions (not integrated with actual backend)
-def placeholder_function():
-    return "This is a placeholder for backend functionality."
 
-# Intro Screen: Mock Login Screen
 def intro_screen():
-    st.title("Offer.ai")
-    st.subheader("Login with your credentials")
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        # Mock authentication success
-        st.session_state['authenticated'] = True
-        st.success("Login successful!")
-        
-
-# Choose Interview Type Screen
-def choose_interview_type():
-    st.title("Select Interview Type")
+    st.title("Ready for your next job?")
+    st.subheader("Choose a difficulty level below to access a wide range of technical questions with detailed solutions, track your progress, and sharpen your skills with customized practice sets. Find your offer with offer.ai.")
     difficulties = ["1st/2nd Year Internship", "All Years Internship", "Entry-Level"]
     difficulty = st.selectbox("Choose Interview Difficulty", difficulties)
     if st.button("Proceed"):
